@@ -236,6 +236,23 @@
         transform: translateY(-50%);
         display: none;
     }
+    #instruction-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      display: none;
+      font-size: 1.1em;
+      line-height: 1.5;
+      max-width: 300px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -264,6 +281,12 @@
       <div id="download-channels"></div>
       <button class="clear-downloads-btn" onclick="clearDownloads()">مسح السجل</button>
     </div>
+  </div>
+  
+  <div id="instruction-message">
+    تم تنزيل الملف! <br>
+    اضغط على الملف في قائمة التنزيلات في المتصفح، <br>
+    ثم اختر "الفتح في برنامج آخر" لتشغيله.
   </div>
 
   <div class="section" id="all-section">
@@ -306,6 +329,7 @@
     const allChannelsContainer = document.getElementById('channels');
     const searchInput = document.getElementById('searchInput');
     const downloadsContainer = document.getElementById('download-channels');
+    const instructionMessage = document.getElementById('instruction-message');
 
     function createChannelButton(number) {
       const btn = document.createElement('div');
@@ -399,11 +423,7 @@
         
         btn.onclick = () => {
             if (!editingEnabled) {
-                if (confirm('هل تريد فتح القناة مباشرةً في VLC؟\n\n(اضغط "إلغاء" لتنزيل ملف القناة)')) {
-                    openInVLC(number);
-                } else {
-                    downloadM3U(number);
-                }
+                downloadM3U(number);
             }
         };
         return btn;
@@ -505,6 +525,12 @@
           saveDownloadHistory();
           renderDownloads();
       }
+
+      // Show the instructional message
+      instructionMessage.style.display = 'block';
+      setTimeout(() => {
+        instructionMessage.style.display = 'none';
+      }, 5000); // Hide after 5 seconds
     }
 
     function openInVLC(channelNumber) {
