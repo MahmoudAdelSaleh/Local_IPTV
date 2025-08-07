@@ -399,7 +399,11 @@
         
         btn.onclick = () => {
             if (!editingEnabled) {
-                openInVLC(number);
+                if (confirm('هل تريد فتح القناة مباشرةً في VLC؟\n\n(اضغط "إلغاء" لتنزيل ملف القناة)')) {
+                    openInVLC(number);
+                } else {
+                    downloadM3U(number);
+                }
             }
         };
         return btn;
