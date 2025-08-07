@@ -75,7 +75,7 @@
       font-weight: 700;
       color: #333;
     }
-    #favorites-container, #channels {
+    #favorites-container, #channels, #downloads-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
       gap: 5px;
@@ -191,7 +191,7 @@
     .pagination button:not(:disabled):hover {
       background-color: #b8912a;
     }
-    .favorites-btn {
+    .favorites-btn, .downloads-btn {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -204,11 +204,43 @@
       transform: translateY(-50%);
       display: block;
     }
+    .downloads-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .clear-downloads-btn {
+        margin-top: 10px;
+        padding: 8px 15px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.8em;
+        transition: background-color 0.3s;
+    }
+    .clear-downloads-btn:hover {
+        background-color: #c82333;
+    }
+    .downloads-btn.editing .delete-icon {
+        display: block;
+    }
+    .downloads-btn .delete-icon {
+        color: #dc3545;
+        font-size: 1.2em;
+        cursor: pointer;
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: none;
+    }
   </style>
 </head>
 <body>
   <h1>📺 Local IPTV</h1>
-  <marquee behavior="scroll" direction="left">Mahmoud Adel Saleh 🖥️ Local IPTV</marquee>
+  <marquee behavior="scroll" direction="right">Mahmoud Adel Saleh 🖥️ Local IPTV</marquee>
 
   <div class="input-row">
     <label for="ip">عنوان IP:</label>
@@ -223,6 +255,14 @@
     <h3>📌 القنوات المفضلة</h3>
     <div id="favorites-container">
       <div id="favorite-channels"></div>
+    </div>
+  </div>
+
+  <div class="section" id="downloads-section">
+    <h3>📥 تنزيلات القنوات</h3>
+    <div class="downloads-container">
+      <div id="download-channels"></div>
+      <button class="clear-downloads-btn" onclick="clearDownloads()">مسح السجل</button>
     </div>
   </div>
 
@@ -260,10 +300,12 @@
     const maxChannels = 2000;
     const totalPages = Math.ceil(maxChannels / channelsPerPage);
     let favoriteNumbers = JSON.parse(localStorage.getItem('favoriteNumbers')) || [];
+    let downloadHistory = JSON.parse(localStorage.getItem('downloadHistory')) || [];
 
     const favoritesContainer = document.getElementById('favorite-channels');
     const allChannelsContainer = document.getElementById('channels');
     const searchInput = document.getElementById('searchInput');
+    const downloadsContainer = document.getElementById('download-channels');
 
     function createChannelButton(number) {
       const btn = document.createElement('div');
@@ -333,6 +375,35 @@
         };
         return btn;
     }
+    
+    function createDownloadButton(number) {
+        const btn = document.createElement('div');
+        btn.className = 'channel-btn downloads-btn';
+        btn.dataset.channelNumber = number;
+
+        const channelNumberSpan = document.createElement('span');
+        channelNumberSpan.textContent = number;
+        btn.appendChild(channelNumberSpan);
+
+        if (editingEnabled) {
+            btn.classList.add('editing');
+            const deleteIcon = document.createElement('span');
+            deleteIcon.className = 'delete-icon';
+            deleteIcon.innerHTML = '🗑️';
+            deleteIcon.onclick = (e) => {
+                e.stopPropagation();
+                deleteChannelPermanently(number);
+            };
+            btn.appendChild(deleteIcon);
+        }
+        
+        btn.onclick = () => {
+            if (!editingEnabled) {
+                openInVLC(number);
+            }
+        };
+        return btn;
+    }
 
     function toggleFavorite(number, btn) {
       if (editingEnabled) return;
@@ -341,11 +412,15 @@
       if (index > -1) {
         favoriteNumbers.splice(index, 1);
         btn.classList.remove('favorite');
-        btn.querySelector('.fav-icon').innerHTML = '🤍';
+        if (btn.querySelector('.fav-icon')) {
+          btn.querySelector('.fav-icon').innerHTML = '🤍';
+        }
       } else {
         favoriteNumbers.push(number);
         btn.classList.add('favorite');
-        btn.querySelector('.fav-icon').innerHTML = '❤️';
+        if (btn.querySelector('.fav-icon')) {
+          btn.querySelector('.fav-icon').innerHTML = '❤️';
+        }
       }
       saveFavorites();
       renderFavorites();
@@ -354,6 +429,10 @@
     function saveFavorites() {
       localStorage.setItem('favoriteNumbers', JSON.stringify(favoriteNumbers));
     }
+    
+    function saveDownloadHistory() {
+      localStorage.setItem('downloadHistory', JSON.stringify(downloadHistory));
+    }
 
     function renderFavorites() {
       favoritesContainer.innerHTML = '';
@@ -361,6 +440,48 @@
         const btn = createFavoriteButton(num);
         favoritesContainer.appendChild(btn);
       });
+    }
+    
+    function renderDownloads() {
+      downloadsContainer.innerHTML = '';
+      downloadHistory.sort((a, b) => a - b).forEach(num => {
+        const btn = createDownloadButton(num);
+        downloadsContainer.appendChild(btn);
+      });
+    }
+    
+    function clearDownloads() {
+        if (confirm('هل أنت متأكد أنك تريد مسح سجل التنزيلات؟')) {
+            downloadHistory = [];
+            saveDownloadHistory();
+            renderDownloads();
+        }
+    }
+
+    function deleteChannelPermanently(number) {
+        if (confirm(`هل أنت متأكد أنك تريد حذف القناة رقم ${number} من السجل بشكل دائم؟`)) {
+            // Remove from download history
+            const downloadIndex = downloadHistory.indexOf(number);
+            if (downloadIndex > -1) {
+                downloadHistory.splice(downloadIndex, 1);
+                saveDownloadHistory();
+            }
+
+            // Remove from favorites
+            const favoriteIndex = favoriteNumbers.indexOf(number);
+            if (favoriteIndex > -1) {
+                favoriteNumbers.splice(favoriteIndex, 1);
+                saveFavorites();
+            }
+
+            // Remove custom name from localStorage
+            localStorage.removeItem(`channelName_${number}`);
+
+            // Re-render all sections
+            renderDownloads();
+            renderFavorites();
+            renderAllChannels(currentPage);
+        }
     }
 
     function downloadM3U(channelNumber) {
@@ -374,6 +495,19 @@
       link.href = URL.createObjectURL(blob);
       link.download = `${channelName}.m3u`;
       link.click();
+      
+      if (!downloadHistory.includes(channelNumber)) {
+          downloadHistory.push(channelNumber);
+          saveDownloadHistory();
+          renderDownloads();
+      }
+    }
+
+    function openInVLC(channelNumber) {
+        const ip = document.getElementById('ip').value;
+        const port = document.getElementById('port').value;
+        const url = `http://${ip}:${port}/live/${channelNumber}`;
+        window.location.href = `vlc://${url}`;
     }
 
     function toggleEditing() {
@@ -383,6 +517,7 @@
       if (editingEnabled) {
         toggleEditBtn.textContent = '✅ حفظ وإغلاق';
         toggleEditBtn.classList.add('editing');
+        document.querySelectorAll('.clear-downloads-btn').forEach(btn => btn.style.display = 'none');
       } else {
         toggleEditBtn.textContent = '✏️ تفعيل تحرير القنوات';
         toggleEditBtn.classList.remove('editing');
@@ -390,9 +525,11 @@
           const channelNumber = span.parentElement.dataset.channelNumber;
           localStorage.setItem(`channelName_${channelNumber}`, span.textContent);
         });
+        document.querySelectorAll('.clear-downloads-btn').forEach(btn => btn.style.display = 'block');
       }
       renderAllChannels(currentPage);
       renderFavorites();
+      renderDownloads();
     }
 
     function renderAllChannels(page) {
@@ -464,9 +601,9 @@
     }
 
     renderFavorites();
+    renderDownloads();
     renderAllChannels(currentPage);
     searchInput.addEventListener('keyup', filterChannels);
   </script>
 </body>
 </html>
-
