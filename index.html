@@ -257,7 +257,7 @@
 </head>
 <body>
   <h1>📺 Local IPTV</h1>
-  <marquee behavior="scroll" direction="left">Mahmoud Adel Saleh 🖥️ Local IPTV</marquee>
+  <marquee behavior="scroll" direction="right">Mahmoud Adel Saleh 🖥️ Local IPTV</marquee>
 
   <div class="input-row">
     <label for="ip">عنوان IP:</label>
@@ -531,13 +531,6 @@
       setTimeout(() => {
         instructionMessage.style.display = 'none';
       }, 5000); // Hide after 5 seconds
-    }
-
-    function openInVLC(channelNumber) {
-        const ip = document.getElementById('ip').value;
-        const port = document.getElementById('port').value;
-        const url = `http://${ip}:${port}/live/${channelNumber}`;
-        window.location.href = `vlc://${url}`;
     }
 
     function toggleEditing() {
