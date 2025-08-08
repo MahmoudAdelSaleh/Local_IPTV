@@ -75,9 +75,19 @@
       font-weight: 700;
       color: #333;
     }
-    #favorites-container, #channels, #downloads-container {
+    #favorites-container, #downloads-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 5px;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    #channels {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr); /* تم تعديل هذا السطر لـ 5 أعمدة */
       gap: 5px;
       padding: 10px;
       background-color: #fff;
@@ -115,16 +125,12 @@
       left: 5px;
       top: 50%;
       transform: translateY(-50%);
-      display: none;
+      display: block;
       z-index: 10;
     }
     .channel-btn.favorite .fav-icon {
       color: #dc3545;
       text-shadow: 0 0 2px #555;
-    }
-    .channel-btn:hover .fav-icon,
-    .channel-btn.editing .fav-icon {
-        display: block;
     }
     .channel-btn span.channel-number,
     .channel-btn span.channel-name {
@@ -210,19 +216,6 @@
       justify-content: center;
       position: relative;
     }
-   .channel-btn .fav-icon {
-  font-size: 1em;
-  cursor: pointer;
-  color: #fff;
-  text-shadow: 0 0 2px #555;
-  position: absolute;
-  left: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: block; /* تم تعديل هذا السطر */
-  z-index: 10;
-}
-
     .downloads-container {
         display: flex;
         flex-direction: column;
