@@ -50,7 +50,7 @@
       direction: ltr;
       font-size: 0.9em;
     }
-    #toggleEdit, #manageCategoriesBtn {
+    #toggleEdit {
       margin: 10px auto;
       padding: 8px 15px;
       background-color: #d4af37;
@@ -66,7 +66,7 @@
     #toggleEdit.editing {
       background-color: #28a745;
     }
-    #toggleEdit:not(.editing):hover, #manageCategoriesBtn:hover {
+    #toggleEdit:not(.editing):hover {
       background-color: #b8912a;
     }
     .section {
@@ -78,6 +78,36 @@
       display: inline-block;
       font-weight: 700;
       color: #333;
+    }
+    .favorites-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .favorites-header h3 {
+      cursor: pointer;
+      margin: 0;
+      border-bottom: 2px solid #d4af37;
+      padding-bottom: 5px;
+      font-weight: 700;
+      color: #333;
+    }
+    .favorites-header #manageCategoriesBtn {
+      margin-right: 10px;
+      padding: 6px 10px;
+      font-size: 0.8em;
+      background-color: #d4af37;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .favorites-header #manageCategoriesBtn:hover {
+      background-color: #b8912a;
     }
     #favorites-container {
       gap: 5px;
@@ -212,43 +242,11 @@
     .pagination button:not(:disabled):hover {
       background-color: #b8912a;
     }
-    .favorites-btn, .downloads-btn {
+    .favorites-btn {
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-    }
-    .downloads-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .clear-downloads-btn {
-        margin-top: 8px;
-        padding: 6px 12px;
-        background-color: #dc3545;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.7em;
-        transition: background-color 0.3s;
-    }
-    .clear-downloads-btn:hover {
-        background-color: #c82333;
-    }
-    .downloads-btn.editing .delete-icon {
-        display: block;
-    }
-    .downloads-btn .delete-icon {
-        color: #dc3545;
-        font-size: 1.1em;
-        cursor: pointer;
-        position: absolute;
-        right: 5px;
-        top: 50%;
-        transform: translateY(-50%);
-        display: none;
     }
     #instruction-message {
       position: fixed;
@@ -409,12 +407,11 @@
   </div>
 
   <div class="section" id="favorites-section">
-    <h3 onclick="toggleFavoritesSection()">📌 القنوات المفضلة</h3>
-    <div id="favorites-container">
-      <div id="favorites-controls">
+    <div class="favorites-header">
         <button id="manageCategoriesBtn" onclick="toggleCategoryManagementMode()">إدارة الفئات</button>
-      </div>
+        <h3 onclick="toggleFavoritesSection()">📌 القنوات المفضلة</h3>
     </div>
+    <div id="favorites-container"></div>
     <div class="favorite-options-modal" id="favoriteOptionsModal"></div>
   </div>
 
@@ -458,6 +455,11 @@
     const channelsPerPage = 50;
     const maxChannels = 2000;
     const totalPages = Math.ceil(maxChannels / channelsPerPage);
+    let allChannels = [];
+    for (let i = 1; i <= maxChannels; i++) {
+        allChannels.push(i);
+    }
+    
     let favorites = JSON.parse(localStorage.getItem('favorites')) || {
         "دينية": [],
         "أطفال": [],
@@ -475,6 +477,7 @@
     const searchInput = document.getElementById('searchInput');
     const instructionMessage = document.getElementById('instruction-message');
     const favoriteOptionsModal = document.getElementById('favoriteOptionsModal');
+    const paginationContainer = document.querySelector('.pagination');
 
     function createChannelButton(number) {
       const btn = document.createElement('div');
@@ -564,12 +567,8 @@
     }
     
     function toggleFavoritesSection() {
-        const contentDivs = document.querySelectorAll('#favorites-container > div');
-        contentDivs.forEach(div => {
-            if (div.id !== 'favorites-controls') {
-                div.style.display = div.style.display === 'none' ? 'block' : 'none';
-            }
-        });
+        const favoritesContent = document.getElementById('favorites-container');
+        favoritesContent.style.display = favoritesContent.style.display === 'none' ? 'block' : 'none';
     }
 
     function toggleFavorite(number) {
@@ -714,29 +713,39 @@
       renderFavorites();
     }
 
-    function renderAllChannels(page) {
+    function renderAllChannels(page, filteredChannels = null) {
       allChannelsContainer.innerHTML = '';
-      const start = (page - 1) * channelsPerPage + 1;
-      const end = Math.min(start + channelsPerPage - 1, maxChannels);
+      let channelsToRender = filteredChannels || allChannels;
+      const start = (page - 1) * channelsPerPage;
+      const end = Math.min(start + channelsPerPage, channelsToRender.length);
 
-      for (let i = start; i <= end; i++) {
-        const btn = createChannelButton(i);
+      for (let i = start; i < end; i++) {
+        const btn = createChannelButton(channelsToRender[i]);
         allChannelsContainer.appendChild(btn);
       }
-      updatePaginationButtons();
+      updatePaginationButtons(filteredChannels);
     }
 
-    function updatePaginationButtons() {
-      document.getElementById('firstPageBtn').disabled = currentPage === 1;
-      document.getElementById('prevPageBtn').disabled = currentPage === 1;
-      document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-      document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
+    function updatePaginationButtons(filteredChannels = null) {
+        const totalChannels = filteredChannels ? filteredChannels.length : maxChannels;
+        const totalPagesToRender = Math.ceil(totalChannels / channelsPerPage);
+        
+        document.getElementById('firstPageBtn').disabled = currentPage === 1;
+        document.getElementById('prevPageBtn').disabled = currentPage === 1;
+        document.getElementById('nextPageBtn').disabled = currentPage >= totalPagesToRender;
+        document.getElementById('lastPageBtn').disabled = currentPage >= totalPagesToRender;
     }
 
     function goToNextPage() {
-      if (currentPage < totalPages) {
+      const totalChannels = searchInput.value ? allChannels.filter(num => {
+          const name = localStorage.getItem(`channelName_${num}`) || `قناة ${num}`;
+          return name.toLowerCase().includes(searchInput.value.toLowerCase()) || String(num).includes(searchInput.value);
+      }).length : maxChannels;
+      
+      const totalPagesToRender = Math.ceil(totalChannels / channelsPerPage);
+      
+      if (currentPage < totalPagesToRender) {
         currentPage++;
-        renderAllChannels(currentPage);
         filterChannels();
       }
     }
@@ -744,45 +753,43 @@
     function goToPreviousPage() {
       if (currentPage > 1) {
         currentPage--;
-        renderAllChannels(currentPage);
         filterChannels();
       }
     }
 
     function goToFirstPage() {
       currentPage = 1;
-      renderAllChannels(currentPage);
       filterChannels();
     }
 
     function goToLastPage() {
-      currentPage = totalPages;
-      renderAllChannels(currentPage);
+      const totalChannels = searchInput.value ? allChannels.filter(num => {
+          const name = localStorage.getItem(`channelName_${num}`) || `قناة ${num}`;
+          return name.toLowerCase().includes(searchInput.value.toLowerCase()) || String(num).includes(searchInput.value);
+      }).length : maxChannels;
+      
+      const totalPagesToRender = Math.ceil(totalChannels / channelsPerPage);
+      currentPage = totalPagesToRender;
       filterChannels();
     }
 
     function filterChannels() {
         const filterText = searchInput.value.toLowerCase().trim();
-        const allChannelButtons = document.querySelectorAll('#channels .channel-btn');
-        const paginationContainer = document.querySelector('.pagination');
-
         if (filterText) {
             paginationContainer.style.display = 'none';
+            const filtered = allChannels.filter(num => {
+                const channelName = localStorage.getItem(`channelName_${num}`) || `قناة ${num}`;
+                return channelName.toLowerCase().includes(filterText) || String(num).includes(filterText);
+            });
+            renderAllChannels(1, filtered);
         } else {
             paginationContainer.style.display = 'flex';
+            renderAllChannels(currentPage);
         }
-
-        allChannelButtons.forEach(btn => {
-            const channelName = localStorage.getItem(`channelName_${btn.dataset.channelNumber}`) || `قناة ${btn.dataset.channelNumber}`;
-            if (channelName.toLowerCase().includes(filterText) || btn.dataset.channelNumber.includes(filterText)) {
-                btn.style.display = 'flex';
-            } else {
-                btn.style.display = 'none';
-            }
-        });
     }
 
     function renderCategoryManagement() {
+        favoritesContainer.innerHTML = '';
         const categories = Object.keys(favorites);
         categories.forEach(category => {
             const editContainer = document.createElement('div');
@@ -841,16 +848,6 @@
 
     function renderFavorites() {
       favoritesContainer.innerHTML = '';
-
-      const controlsDiv = document.createElement('div');
-      controlsDiv.id = 'favorites-controls';
-      const manageBtn = document.createElement('button');
-      manageBtn.id = 'manageCategoriesBtn';
-      manageBtn.textContent = 'إدارة الفئات';
-      manageBtn.onclick = toggleCategoryManagementMode;
-      controlsDiv.appendChild(manageBtn);
-      favoritesContainer.appendChild(controlsDiv);
-
       if (categoryManagementMode) {
           renderCategoryManagement();
       } else {
@@ -902,7 +899,10 @@
 
     renderFavorites();
     renderAllChannels(currentPage);
-    searchInput.addEventListener('keyup', filterChannels);
+    searchInput.addEventListener('keyup', () => {
+        currentPage = 1;
+        filterChannels();
+    });
   </script>
 </body>
 </html>
