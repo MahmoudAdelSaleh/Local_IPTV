@@ -13,21 +13,23 @@
     body {
       font-family: 'Tajawal', sans-serif;
       background: linear-gradient(135deg, #f5f5f5, #e5e5e5);
-      padding: 20px;
+      padding: 10px;
       text-align: center;
       direction: rtl;
     }
     h1 {
       color: #333;
       font-weight: 700;
+      margin-top: 10px;
+      margin-bottom: 5px;
     }
     marquee {
-      font-size: 1.1em;
+      font-size: 1em;
       color: #444;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .input-row {
-      margin: 10px auto;
+      margin: 5px auto;
       max-width: 300px;
       display: flex;
       justify-content: space-between;
@@ -37,36 +39,38 @@
       width: 35%;
       text-align: right;
       font-weight: bold;
+      font-size: 0.9em;
     }
     .input-row input {
       width: 60%;
-      padding: 8px;
+      padding: 6px;
       border-radius: 8px;
       border: 1px solid #ccc;
       text-align: left;
       direction: ltr;
+      font-size: 0.9em;
     }
-    #toggleEdit, #manageCategoriesBtn, #saveCategoriesBtn {
-      margin: 15px auto;
-      padding: 12px 25px;
+    #toggleEdit, #manageCategoriesBtn {
+      margin: 10px auto;
+      padding: 8px 15px;
       background-color: #d4af37;
       color: white;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      font-size: 1em;
+      font-size: 0.9em;
       font-weight: bold;
       transition: background-color 0.3s;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    #toggleEdit.editing, #saveCategoriesBtn {
+    #toggleEdit.editing {
       background-color: #28a745;
     }
     #toggleEdit:not(.editing):hover, #manageCategoriesBtn:hover {
       background-color: #b8912a;
     }
     .section {
-      margin-top: 30px;
+      margin-top: 20px;
     }
     .section h3 {
       border-bottom: 2px solid #d4af37;
@@ -75,13 +79,13 @@
       font-weight: 700;
       color: #333;
     }
-    #favorites-container, #downloads-container {
+    #favorites-container {
       gap: 5px;
       padding: 10px;
       background-color: #fff;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     #channels {
       display: grid;
@@ -91,7 +95,7 @@
       background-color: #fff;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .channel-btn {
       position: relative;
@@ -108,14 +112,14 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       transition: background-color 0.3s, transform 0.2s;
       color: #333;
-      min-height: 36px;
+      min-height: 30px;
     }
     .channel-btn:hover {
       background-color: #e0e0e0;
       transform: translateY(-2px);
     }
     .channel-btn .fav-icon {
-      font-size: 1em;
+      font-size: 0.9em;
       cursor: pointer;
       color: #fff;
       text-shadow: 0 0 2px #555;
@@ -170,32 +174,33 @@
         display: none;
     }
     .search-row {
-      margin-top: 20px;
-      margin-bottom: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
     }
     #searchInput {
       width: 70%;
       max-width: 400px;
-      padding: 10px;
+      padding: 8px;
       border-radius: 8px;
       border: 1px solid #ccc;
       text-align: right;
+      font-size: 0.9em;
     }
     .pagination {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-      margin-bottom: 20px;
+      gap: 5px;
+      margin-top: 10px;
+      margin-bottom: 10px;
     }
     .pagination button {
-      padding: 10px 15px;
+      padding: 8px 12px;
       background-color: #d4af37;
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 0.9em;
+      font-size: 0.8em;
       font-weight: bold;
       transition: background-color 0.3s;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -219,14 +224,14 @@
         align-items: center;
     }
     .clear-downloads-btn {
-        margin-top: 10px;
-        padding: 8px 15px;
+        margin-top: 8px;
+        padding: 6px 12px;
         background-color: #dc3545;
         color: white;
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 0.8em;
+        font-size: 0.7em;
         transition: background-color 0.3s;
     }
     .clear-downloads-btn:hover {
@@ -237,7 +242,7 @@
     }
     .downloads-btn .delete-icon {
         color: #dc3545;
-        font-size: 1.2em;
+        font-size: 1.1em;
         cursor: pointer;
         position: absolute;
         right: 5px;
@@ -252,18 +257,18 @@
       transform: translate(-50%, -50%);
       background-color: #333;
       color: #fff;
-      padding: 20px;
+      padding: 15px;
       border-radius: 10px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       z-index: 1000;
       display: none;
-      font-size: 1.1em;
-      line-height: 1.5;
-      max-width: 300px;
+      font-size: 1em;
+      line-height: 1.4;
+      max-width: 280px;
       text-align: center;
     }
     .favorite-category {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         background-color: #f9f9f9;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -271,22 +276,23 @@
     }
     .category-header {
         cursor: pointer;
-        padding: 10px 15px;
+        padding: 8px 12px;
         background-color: #d4af37;
         color: white;
         margin: 0;
         display: flex;
         align-items: center;
         font-weight: bold;
+        font-size: 0.9em;
     }
     .category-header:hover {
         background-color: #b8912a;
     }
     .category-channels {
         display: none;
-        padding: 10px;
-        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-        gap: 5px;
+        padding: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+        gap: 4px;
     }
     .category-channels.expanded {
         display: grid;
@@ -297,10 +303,10 @@
         justify-content: center;
         align-items: center;
         width: 100%;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
     }
     .favorite-options-modal {
-        position: fixed; /* تم التعديل إلى fixed */
+        position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -313,7 +319,7 @@
         display: none;
         flex-direction: column;
         gap: 8px;
-        min-width: 250px; /* لضمان عرض ثابت للقائمة */
+        min-width: 250px;
         max-width: 80%;
     }
     .favorite-options-modal h4 {
@@ -391,7 +397,7 @@
 </head>
 <body>
   <h1>📺 Local IPTV</h1>
-  <marquee behavior="scroll" direction="left">Mahmoud Adel Saleh 📺 Local IPTV</marquee>
+  <marquee behavior="scroll" direction="right">Mahmoud Adel Saleh 📺 Local IPTV</marquee>
 
   <div class="input-row">
     <label for="ip">عنوان IP:</label>
@@ -410,14 +416,6 @@
       </div>
     </div>
     <div class="favorite-options-modal" id="favoriteOptionsModal"></div>
-  </div>
-
-  <div class="section" id="downloads-section">
-    <h3>📥 تنزيلات القنوات</h3>
-    <div class="downloads-container">
-      <div id="download-channels"></div>
-      <button class="clear-downloads-btn" onclick="clearDownloads()">مسح السجل</button>
-    </div>
   </div>
 
   <div id="instruction-message">
@@ -475,7 +473,6 @@
     const favoritesContainer = document.getElementById('favorites-container');
     const allChannelsContainer = document.getElementById('channels');
     const searchInput = document.getElementById('searchInput');
-    const downloadsContainer = document.getElementById('download-channels');
     const instructionMessage = document.getElementById('instruction-message');
     const favoriteOptionsModal = document.getElementById('favoriteOptionsModal');
 
@@ -507,7 +504,6 @@
         channelNameSpan.addEventListener('input', () => {
           localStorage.setItem(`channelName_${number}`, channelNameSpan.textContent);
           renderFavorites();
-          renderDownloads();
         });
       }
       
@@ -563,35 +559,6 @@
 
       btn.onclick = () => {
         downloadM3U(number);
-      };
-      return btn;
-    }
-
-    function createDownloadButton(number) {
-      const btn = document.createElement('div');
-      btn.className = 'channel-btn downloads-btn';
-      btn.dataset.channelNumber = number;
-
-      const channelNumberSpan = document.createElement('span');
-      channelNumberSpan.textContent = number;
-      btn.appendChild(channelNumberSpan);
-
-      if (editingEnabled) {
-        btn.classList.add('editing');
-        const deleteIcon = document.createElement('span');
-        deleteIcon.className = 'delete-icon';
-        deleteIcon.innerHTML = '🗑️';
-        deleteIcon.onclick = (e) => {
-            e.stopPropagation();
-            deleteChannelPermanently(number);
-        };
-        btn.appendChild(deleteIcon);
-      }
-
-      btn.onclick = () => {
-        if (!editingEnabled) {
-            downloadM3U(number);
-        }
       };
       return btn;
     }
@@ -705,170 +672,6 @@
       localStorage.setItem('downloadHistory', JSON.stringify(downloadHistory));
     }
 
-    function renderFavorites() {
-      favoritesContainer.innerHTML = '';
-
-      const controlsDiv = document.createElement('div');
-      controlsDiv.id = 'favorites-controls';
-      const manageBtn = document.createElement('button');
-      manageBtn.id = 'manageCategoriesBtn';
-      manageBtn.textContent = 'إدارة الفئات';
-      manageBtn.onclick = toggleCategoryManagementMode;
-      controlsDiv.appendChild(manageBtn);
-      favoritesContainer.appendChild(controlsDiv);
-
-      if (categoryManagementMode) {
-          renderCategoryManagement();
-      } else {
-          for (const category in favorites) {
-            if (favorites[category].length > 0) {
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'favorite-category';
-                
-                const categoryHeader = document.createElement('h4');
-                categoryHeader.className = 'category-header';
-                categoryHeader.textContent = `▶️ ${category}`;
-                categoryHeader.onclick = () => {
-                    channelsContainer.classList.toggle('expanded');
-                    if(channelsContainer.classList.contains('expanded')) {
-                        categoryHeader.textContent = `🔽 ${category}`;
-                    } else {
-                        categoryHeader.textContent = `▶️ ${category}`;
-                    }
-                };
-                categoryDiv.appendChild(categoryHeader);
-
-                const channelsContainer = document.createElement('div');
-                channelsContainer.className = 'category-channels';
-                categoryDiv.appendChild(channelsContainer);
-
-                favorites[category].sort((a, b) => a - b).forEach(num => {
-                    const btn = createFavoriteButton(num, category);
-                    channelsContainer.appendChild(btn);
-                });
-                
-                favoritesContainer.appendChild(categoryDiv);
-            }
-          }
-      }
-    }
-    
-    function toggleCategoryManagementMode() {
-        categoryManagementMode = !categoryManagementMode;
-        const manageBtn = document.getElementById('manageCategoriesBtn');
-        if (categoryManagementMode) {
-            manageBtn.textContent = '✅ حفظ الفئات';
-            manageBtn.style.backgroundColor = '#28a745';
-        } else {
-            manageBtn.textContent = 'إدارة الفئات';
-            manageBtn.style.backgroundColor = '#d4af37';
-        }
-        renderFavorites();
-    }
-
-    function renderCategoryManagement() {
-        const categories = Object.keys(favorites);
-        categories.forEach(category => {
-            const editContainer = document.createElement('div');
-            editContainer.className = 'category-edit-container';
-            
-            const categoryInput = document.createElement('input');
-            categoryInput.type = 'text';
-            categoryInput.value = category;
-            categoryInput.onchange = (e) => {
-                renameCategory(category, e.target.value);
-            };
-            editContainer.appendChild(categoryInput);
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.innerHTML = '🗑️';
-            deleteBtn.onclick = () => {
-                if (confirm(`هل أنت متأكد أنك تريد حذف فئة "${category}"؟ سيتم حذف جميع القنوات الموجودة بها.`)) {
-                    delete favorites[category];
-                    saveFavorites();
-                    renderFavorites();
-                }
-            };
-            editContainer.appendChild(deleteBtn);
-
-            favoritesContainer.appendChild(editContainer);
-        });
-
-        const addBtn = document.createElement('button');
-        addBtn.className = 'add-category-btn';
-        addBtn.textContent = '➕ إضافة فئة جديدة';
-        addBtn.onclick = addNewCategory;
-        favoritesContainer.appendChild(addBtn);
-    }
-    
-    function addNewCategory() {
-        const newName = prompt("أدخل اسم الفئة الجديدة:");
-        if (newName && !favorites[newName]) {
-            favorites[newName] = [];
-            saveFavorites();
-            renderFavorites();
-        } else if (newName) {
-            alert("هذه الفئة موجودة بالفعل.");
-        }
-    }
-
-    function renameCategory(oldName, newName) {
-        if (newName && newName !== oldName && !favorites[newName]) {
-            favorites[newName] = favorites[oldName];
-            delete favorites[oldName];
-            saveFavorites();
-            renderFavorites();
-        } else if (newName && newName !== oldName) {
-            alert("اسم الفئة الجديد غير صالح أو موجود بالفعل.");
-        }
-    }
-
-    function renderDownloads() {
-      downloadsContainer.innerHTML = '';
-      downloadHistory.sort((a, b) => a - b).forEach(num => {
-        const btn = createDownloadButton(num);
-        const name = localStorage.getItem(`channelName_${num}`) || `قناة ${num}`;
-        const nameSpan = document.createElement('span');
-        nameSpan.style.fontSize = '0.8em';
-        nameSpan.style.marginRight = '6px';
-        nameSpan.textContent = name;
-        btn.insertBefore(nameSpan, btn.querySelector('span'));
-        downloadsContainer.appendChild(btn);
-      });
-    }
-
-    function clearDownloads() {
-        if (confirm('هل أنت متأكد أنك تريد مسح سجل التنزيلات؟')) {
-            downloadHistory = [];
-            saveDownloadHistory();
-            renderDownloads();
-        }
-    }
-
-    function deleteChannelPermanently(number) {
-        if (confirm(`هل أنت متأكد أنك تريد حذف القناة رقم ${number} من السجل بشكل دائم؟`)) {
-            const downloadIndex = downloadHistory.indexOf(number);
-            if (downloadIndex > -1) {
-                downloadHistory.splice(downloadIndex, 1);
-                saveDownloadHistory();
-            }
-            
-            for (const category in favorites) {
-                const favoriteIndex = favorites[category].indexOf(number);
-                if (favoriteIndex > -1) {
-                    favorites[category].splice(favoriteIndex, 1);
-                }
-            }
-            saveFavorites();
-
-            localStorage.removeItem(`channelName_${number}`);
-
-            renderDownloads();
-            renderFavorites();
-            renderAllChannels(currentPage);
-        }
-    }
-
     function downloadM3U(channelNumber) {
       const ip = document.getElementById('ip').value;
       const port = document.getElementById('port').value;
@@ -884,7 +687,6 @@
       if (!downloadHistory.includes(channelNumber)) {
           downloadHistory.push(channelNumber);
           saveDownloadHistory();
-          renderDownloads();
       }
 
       instructionMessage.style.display = 'block';
@@ -900,7 +702,6 @@
       if (editingEnabled) {
         toggleEditBtn.textContent = '✅ حفظ وإغلاق';
         toggleEditBtn.classList.add('editing');
-        document.querySelectorAll('.clear-downloads-btn').forEach(btn => btn.style.display = 'none');
       } else {
         toggleEditBtn.textContent = '✏️ تفعيل تحرير القنوات';
         toggleEditBtn.classList.remove('editing');
@@ -908,11 +709,9 @@
           const channelNumber = span.parentElement.dataset.channelNumber;
           localStorage.setItem(`channelName_${channelNumber}`, span.textContent);
         });
-        document.querySelectorAll('.clear-downloads-btn').forEach(btn => btn.style.display = 'block');
       }
       renderAllChannels(currentPage);
       renderFavorites();
-      renderDownloads();
     }
 
     function renderAllChannels(page) {
@@ -983,8 +782,125 @@
         });
     }
 
+    function renderCategoryManagement() {
+        const categories = Object.keys(favorites);
+        categories.forEach(category => {
+            const editContainer = document.createElement('div');
+            editContainer.className = 'category-edit-container';
+            
+            const categoryInput = document.createElement('input');
+            categoryInput.type = 'text';
+            categoryInput.value = category;
+            categoryInput.onchange = (e) => {
+                renameCategory(category, e.target.value);
+            };
+            editContainer.appendChild(categoryInput);
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '🗑️';
+            deleteBtn.onclick = () => {
+                if (confirm(`هل أنت متأكد أنك تريد حذف فئة "${category}"؟ سيتم حذف جميع القنوات الموجودة بها.`)) {
+                    delete favorites[category];
+                    saveFavorites();
+                    renderFavorites();
+                }
+            };
+            editContainer.appendChild(deleteBtn);
+
+            favoritesContainer.appendChild(editContainer);
+        });
+
+        const addBtn = document.createElement('button');
+        addBtn.className = 'add-category-btn';
+        addBtn.textContent = '➕ إضافة فئة جديدة';
+        addBtn.onclick = addNewCategory;
+        favoritesContainer.appendChild(addBtn);
+    }
+
+    function addNewCategory() {
+        const newName = prompt("أدخل اسم الفئة الجديدة:");
+        if (newName && !favorites[newName]) {
+            favorites[newName] = [];
+            saveFavorites();
+            renderFavorites();
+        } else if (newName) {
+            alert("هذه الفئة موجودة بالفعل.");
+        }
+    }
+
+    function renameCategory(oldName, newName) {
+        if (newName && newName !== oldName && !favorites[newName]) {
+            favorites[newName] = favorites[oldName];
+            delete favorites[oldName];
+            saveFavorites();
+            renderFavorites();
+        } else if (newName && newName !== oldName) {
+            alert("اسم الفئة الجديد غير صالح أو موجود بالفعل.");
+        }
+    }
+
+    function renderFavorites() {
+      favoritesContainer.innerHTML = '';
+
+      const controlsDiv = document.createElement('div');
+      controlsDiv.id = 'favorites-controls';
+      const manageBtn = document.createElement('button');
+      manageBtn.id = 'manageCategoriesBtn';
+      manageBtn.textContent = 'إدارة الفئات';
+      manageBtn.onclick = toggleCategoryManagementMode;
+      controlsDiv.appendChild(manageBtn);
+      favoritesContainer.appendChild(controlsDiv);
+
+      if (categoryManagementMode) {
+          renderCategoryManagement();
+      } else {
+          for (const category in favorites) {
+            if (favorites[category].length > 0) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'favorite-category';
+                
+                const categoryHeader = document.createElement('h4');
+                categoryHeader.className = 'category-header';
+                categoryHeader.textContent = `▶️ ${category}`;
+                categoryHeader.onclick = () => {
+                    channelsContainer.classList.toggle('expanded');
+                    if(channelsContainer.classList.contains('expanded')) {
+                        categoryHeader.textContent = `🔽 ${category}`;
+                    } else {
+                        categoryHeader.textContent = `▶️ ${category}`;
+                    }
+                };
+                categoryDiv.appendChild(categoryHeader);
+
+                const channelsContainer = document.createElement('div');
+                channelsContainer.className = 'category-channels';
+                categoryDiv.appendChild(channelsContainer);
+
+                favorites[category].sort((a, b) => a - b).forEach(num => {
+                    const btn = createFavoriteButton(num, category);
+                    channelsContainer.appendChild(btn);
+                });
+                
+                favoritesContainer.appendChild(categoryDiv);
+            }
+          }
+      }
+    }
+    
+    function toggleCategoryManagementMode() {
+        categoryManagementMode = !categoryManagementMode;
+        const manageBtn = document.getElementById('manageCategoriesBtn');
+        if (categoryManagementMode) {
+            manageBtn.textContent = '✅ حفظ الفئات';
+            manageBtn.style.backgroundColor = '#28a745';
+        } else {
+            manageBtn.textContent = 'إدارة الفئات';
+            manageBtn.style.backgroundColor = '#d4af37';
+        }
+        renderFavorites();
+    }
+
     renderFavorites();
-    renderDownloads();
     renderAllChannels(currentPage);
     searchInput.addEventListener('keyup', filterChannels);
   </script>
