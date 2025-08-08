@@ -100,6 +100,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       transition: background-color 0.3s, transform 0.2s;
       color: #333;
+      min-height: 36px;
     }
     .channel-btn:hover {
       background-color: #e0e0e0;
@@ -142,13 +143,25 @@
       position: static;
       transform: none;
       margin-left: 5px;
+      display: block; /* إظهار القلب أثناء التحرير */
+      color: #fff; /* نجعل القلب أبيض بشكل واضح في الوضع العادي غير المفضل */
+      text-shadow: 0 0 2px #555;
     }
+    /* خلفية أغمق ومساحة تحرير لاسم القناة أثناء التحرير */
     .channel-btn.editing span.channel-name {
         pointer-events: auto;
         user-select: text;
         text-align: right;
         border-bottom: 1px dashed #000;
         display: inline;
+        background-color: #e0e0e0; /* درجة أغمق قليلاً */
+        padding: 2px 6px;
+        border-radius: 4px;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      direction: rtl;
     }
     .channel-btn.editing span.channel-number {
         display: none;
@@ -197,13 +210,19 @@
       justify-content: center;
       position: relative;
     }
-    .favorites-btn .fav-icon {
-      position: absolute;
-      left: 5px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: block;
-    }
+   .channel-btn .fav-icon {
+  font-size: 1em;
+  cursor: pointer;
+  color: #fff;
+  text-shadow: 0 0 2px #555;
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: block; /* تم تعديل هذا السطر */
+  z-index: 10;
+}
+
     .downloads-container {
         display: flex;
         flex-direction: column;
@@ -253,11 +272,12 @@
       max-width: 300px;
       text-align: center;
     }
-  </style>
+  
+</style>
 </head>
 <body>
   <h1>📺 Local IPTV</h1>
-  <marquee behavior="scroll" direction="right">Mahmoud Adel Saleh 🖥️ Local IPTV</marquee>
+  <marquee behavior="scroll" direction="right">Mahmoud Adel Saleh 📺  Local IPTV</marquee>
 
   <div class="input-row">
     <label for="ip">عنوان IP:</label>
@@ -282,7 +302,7 @@
       <button class="clear-downloads-btn" onclick="clearDownloads()">مسح السجل</button>
     </div>
   </div>
-  
+
   <div id="instruction-message">
     تم تنزيل الملف! <br>
     اضغط على الملف في قائمة التنزيلات في المتصفح، <br>
@@ -352,7 +372,23 @@
       channelNameSpan.className = 'channel-name';
       const channelName = localStorage.getItem(`channelName_${number}`) || `قناة ${number}`;
       channelNameSpan.textContent = channelName;
-      channelNameSpan.contentEditable = editingEnabled;
+      // اجعل المحتوى قابل للتحرير تبعاً للوضع
+      channelNameSpan.contentEditable = editingEnabled ? "true" : "false";
+      channelNameSpan.setAttribute('aria-label', 'اسم القناة');
+
+      // حدث الحفظ الفوري أثناء التحرير
+      if (editingEnabled) {
+        channelNameSpan.addEventListener('input', () => {
+          // نحفظ التعديل فوراً في localStorage
+          localStorage.setItem(`channelName_${number}`, channelNameSpan.textContent);
+          // إذا كانت القناة في المفضلة، نعيد رسم المفضلات لتعكس الاسم المحدث
+          if (favoriteNumbers.includes(number)) {
+            renderFavorites();
+          }
+          // أيضاً نحدث زر التنزيلات إن كانت موجودة
+          renderDownloads();
+        });
+      }
 
       btn.appendChild(favIcon);
       if (editingEnabled) {
@@ -375,7 +411,7 @@
 
       return btn;
     }
-    
+
     function createFavoriteButton(number) {
         const btn = document.createElement('div');
         btn.className = 'channel-btn favorites-btn';
@@ -393,13 +429,13 @@
         const channelNumberSpan = document.createElement('span');
         channelNumberSpan.textContent = number;
         btn.appendChild(channelNumberSpan);
-        
+
         btn.onclick = () => {
           downloadM3U(number);
         };
         return btn;
     }
-    
+
     function createDownloadButton(number) {
         const btn = document.createElement('div');
         btn.className = 'channel-btn downloads-btn';
@@ -420,7 +456,7 @@
             };
             btn.appendChild(deleteIcon);
         }
-        
+
         btn.onclick = () => {
             if (!editingEnabled) {
                 downloadM3U(number);
@@ -441,6 +477,7 @@
         }
       } else {
         favoriteNumbers.push(number);
+        favoriteNumbers.sort((a,b)=>a-b);
         btn.classList.add('favorite');
         if (btn.querySelector('.fav-icon')) {
           btn.querySelector('.fav-icon').innerHTML = '❤️';
@@ -453,27 +490,43 @@
     function saveFavorites() {
       localStorage.setItem('favoriteNumbers', JSON.stringify(favoriteNumbers));
     }
-    
+
     function saveDownloadHistory() {
       localStorage.setItem('downloadHistory', JSON.stringify(downloadHistory));
     }
 
     function renderFavorites() {
       favoritesContainer.innerHTML = '';
+      // ترتيب رقمي
       favoriteNumbers.sort((a, b) => a - b).forEach(num => {
         const btn = createFavoriteButton(num);
+        // عرض اسم القناة بجوار الرقم لو موجود
+        const name = localStorage.getItem(`channelName_${num}`) || `قناة ${num}`;
+        const nameSpan = document.createElement('span');
+        nameSpan.style.fontSize = '0.8em';
+        nameSpan.style.marginRight = '6px';
+        nameSpan.textContent = name;
+        // وضع الاسم قبل الرقم لكن نحافظ على RTL
+        btn.insertBefore(nameSpan, btn.querySelector('span'));
         favoritesContainer.appendChild(btn);
       });
     }
-    
+
     function renderDownloads() {
       downloadsContainer.innerHTML = '';
       downloadHistory.sort((a, b) => a - b).forEach(num => {
         const btn = createDownloadButton(num);
+        // إظهار اسم القناة أيضاً
+        const name = localStorage.getItem(`channelName_${num}`) || `قناة ${num}`;
+        const nameSpan = document.createElement('span');
+        nameSpan.style.fontSize = '0.8em';
+        nameSpan.style.marginRight = '6px';
+        nameSpan.textContent = name;
+        btn.insertBefore(nameSpan, btn.querySelector('span'));
         downloadsContainer.appendChild(btn);
       });
     }
-    
+
     function clearDownloads() {
         if (confirm('هل أنت متأكد أنك تريد مسح سجل التنزيلات؟')) {
             downloadHistory = [];
@@ -519,7 +572,7 @@
       link.href = URL.createObjectURL(blob);
       link.download = `${channelName}.m3u`;
       link.click();
-      
+
       if (!downloadHistory.includes(channelNumber)) {
           downloadHistory.push(channelNumber);
           saveDownloadHistory();
@@ -536,20 +589,23 @@
     function toggleEditing() {
       editingEnabled = !editingEnabled;
       const toggleEditBtn = document.getElementById('toggleEdit');
-      
+
       if (editingEnabled) {
         toggleEditBtn.textContent = '✅ حفظ وإغلاق';
         toggleEditBtn.classList.add('editing');
+        // إخفاء زر المسح أثناء التحرير لمنع الحذف غير المقصود
         document.querySelectorAll('.clear-downloads-btn').forEach(btn => btn.style.display = 'none');
       } else {
         toggleEditBtn.textContent = '✏️ تفعيل تحرير القنوات';
         toggleEditBtn.classList.remove('editing');
+        // نأخذ كل العناصر المعدلة ونتأكد ان محفوظة (للأمان)
         document.querySelectorAll('.channel-btn.editing span.channel-name').forEach(span => {
           const channelNumber = span.parentElement.dataset.channelNumber;
           localStorage.setItem(`channelName_${channelNumber}`, span.textContent);
         });
         document.querySelectorAll('.clear-downloads-btn').forEach(btn => btn.style.display = 'block');
       }
+      // نعيد رسم القوائم لتطبيق وضع التحرير/الغاء التحرير
       renderAllChannels(currentPage);
       renderFavorites();
       renderDownloads();
@@ -623,6 +679,7 @@
         });
     }
 
+    // تهيئة العرض عند التحميل
     renderFavorites();
     renderDownloads();
     renderAllChannels(currentPage);
