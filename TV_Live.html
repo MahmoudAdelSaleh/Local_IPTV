@@ -1,641 +1,432 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sunplus SAT2IP</title>
-    <style>
-        :root {
-            --golden-diamond: #bfa14b;
-            --silver: #c0c0c0;
-            --copper: #b87333;
-            --text-color: #333;
-            --background-color: #f0f2f5;
-            --control-bg: #f9f9f9;
-            --border-color: var(--copper);
-            --primary-color: var(--golden-diamond);
-            --secondary-color: var(--silver);
-            --green-screen: #04ff00;
-            --error-red: #ff3333;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0; 
-            padding: 10px 15px;
-            text-align: center;
-            line-height: 1.2;
-        }
-        
-        h1 {
-            color: var(--primary-color);
-            font-size: 2.3rem;
-            margin: 0 0 10px 0;
-            z-index: 1001;
-        }
-        
-        .video-container {
-            position: sticky;
-            top: 0;
-            width: 100%;
-            max-height: 40vh;
-            z-index: 1000;
-            margin-bottom: 6px;
-        }
-        
-        #videoPlayer {
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            border-radius: 8px;
-            box-shadow: 0 0 12px var(--golden-diamond);
-        }
-        
-        .video-controls {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            z-index: 1002;
-        }
-        
-        #toggleMuteBtn {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        
-        #toggleMuteBtn:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-            transform: scale(1.1);
-        }
-        
-        #channelDisplay {
-            position: sticky;
-            top: calc(40vh + 6px);
-            background-color: #000;
-            color: var(--green-screen);
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            font-size: 1.3rem;
-            width: 100px;
-            margin: 0 auto 12px auto;
-            border-radius: 5px;
-            padding: 6px 0;
-            box-shadow: 0 0 8px var(--green-screen);
-            user-select: none;
-            z-index: 1001;
-        }
-        
-        .channel-controls {
-            position: sticky;
-            top: calc(40vh + 50px);
-            background: var(--control-bg);
-            max-width: 900px;
-            margin: 0 auto 10px auto;
-            padding: 8px 10px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px var(--copper);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 999;
-        }
-        
-        .channel-step-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: nowrap;
-            align-items: center;
-        }
-        
-        .channel-step-buttons.positive,
-        .channel-step-buttons.negative {
-            justify-content: center;
-        }
-        
-        .channel-step-buttons button,
-        .channel-step-buttons.volume-button {
-            flex: 1 1 16%;
-            padding: 8px 0;
-            font-size: 1.1rem;
-            background-color: var(--secondary-color);
-            border: 2px solid var(--copper);
-            color: var(--text-color);
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.3s ease;
-            min-width: 48px;
-        }
-        
-        .channel-step-buttons button:hover,
-        .channel-step-buttons.volume-button:hover {
-            background-color: var(--golden-diamond);
-            color: white;
-        }
-        
-        .volume-button {
-            flex: 1 1 12%;
-            font-size: 1.2rem;
-            padding: 8px 6px;
-            max-width: 48px;
-        }
-        
-        select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: left 15px center;
-            max-width: 400px;
-            width: 100%;
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 2px solid var(--copper);
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            margin: 6px auto 0 auto;
-            display: block;
-            font-size: 1rem;
-            height: 32px;
-            overflow: hidden;
-            line-height: 1.2;
-        }
-        
-        select:hover, select:focus {
-            background-color: var(--golden-diamond);
-            color: white;
-            outline: none;
-            border-color: var(--golden-diamond);
-        }
-        
-        input[type="text"] {
-            width: 80px;
-            max-width: 100%;
-            padding: 5px 8px;
-            border-radius: 6px;
-            border: 2px solid var(--copper);
-            font-size: 0.85rem;
-            text-align: center;
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-        }
-        
-        input[type="text"]:focus {
-            background-color: var(--golden-diamond);
-            color: white;
-            outline: none;
-            border-color: var(--golden-diamond);
-        }
-        
-        #portInput {
-            width: 60px;
-            max-width: 100%;
-        }
-        
-        body, button {
-            user-select: none;
-        }
-        
-        button {
-            border: none;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 15px 120px 15px;
-            background-color: var(--control-bg);
-            border-radius: 10px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .controls-server {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 900px;
-            width: 100%;
-            background: var(--control-bg);
-            padding: 6px 10px;
-            box-shadow: 0 -3px 10px var(--copper);
-            border-top: 2px solid var(--copper);
-            z-index: 1005;
-            font-size: 0.75rem;
-            color: var(--text-color);
-            display: none;
-            flex-wrap: nowrap;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 10px;
-        }
-        
-        .server-inputs {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 100px;
-        }
-        
-        label {
-            font-weight: bold;
-            white-space: nowrap;
-            margin-bottom: 2px;
-            text-align: right;
-        }
-        
-        #updateServerBtn {
-            height: 36px;
-            padding: 0 12px;
-            border-radius: 6px;
-            border: 2px solid var(--copper);
-            font-weight: bold;
-            font-size: 0.85rem;
-            background-color: var(--primary-color);
-            color: white;
-            cursor: pointer;
-            user-select: none;
-            align-self: flex-end;
-            transition: all 0.3s ease;
-        }
-        
-        #updateServerBtn:hover {
-            background-color: var(--copper);
-        }
-        
-        #toggleServerSettings {
-            cursor: pointer;
-            color: var(--golden-diamond);
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            user-select: none;
-            padding: 5px;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-        
-        #toggleServerSettings:hover {
-            background-color: rgba(191, 161, 75, 0.1);
-        }
-        
-        #errorMessage {
-            color: var(--error-red);
-            font-weight: bold;
-            margin: 5px 0;
-            min-height: 20px;
-        }
-        
-        #clearHistoryBtn {
-            background-color: var(--error-red);
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-top: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        #clearHistoryBtn:hover {
-            opacity: 0.8;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>  Sunplus  SAT2IP </title>
+<style>
+    :root {
+        --golden-diamond: #bfa14b;
+        --silver: #c0c0c0;
+        --copper: #b87333;
+        --text-color: #333;
+        --background-color: #f0f2f5;
+        --control-bg: #f9f9f9;
+        --border-color: var(--copper);
+        --primary-color: var(--golden-diamond);
+        --secondary-color: var(--silver);
+        --green-screen: #04ff00;
+    }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        margin: 0; padding: 10px 15px;
+        text-align: center;
+        line-height: 1.2;
+    }
+    h1 {
+        color: var(--primary-color);
+        font-size: 2.3rem;
+        margin: 0 0 10px 0;
+        z-index: 1001;
+    }
+    #videoPlayer {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        max-height: 40vh;
+        background-color: #000;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        z-index: 1000;
+        box-shadow: 0 0 12px var(--golden-diamond);
+    }
+    /* شاشة رقم القناة - عدسة الرسيفر */
+    #channelDisplay {
+        position: sticky;
+        top: calc(40vh + 6px);
+        background-color: #000;
+        color: var(--green-screen);
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        font-size: 1.3rem;
+        width: 100px;
+        margin: 0 auto 12px auto;
+        border-radius: 5px;
+        padding: 6px 0;
+        box-shadow: 0 0 8px var(--green-screen);
+        user-select: none;
+        z-index: 1001;
+    }
+    .channel-controls {
+        position: sticky;
+        top: calc(40vh + 50px);
+        background: var(--control-bg);
+        max-width: 900px;
+        margin: 0 auto 10px auto;
+        padding: 8px 10px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px var(--copper);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 999;
+    }
+    .channel-step-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+    .channel-step-buttons.positive,
+    .channel-step-buttons.negative {
+        justify-content: center;
+    }
+    .channel-step-buttons.positive button,
+    .channel-step-buttons.negative button,
+    .channel-step-buttons.volume-button {
+        flex: 1 1 16%;
+        padding: 8px 0;
+        font-size: 1.1rem;
+        background-color: var(--secondary-color);
+        border: 2px solid var(--copper);
+        color: var(--text-color);
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        min-width: 48px;
+    }
+    .channel-step-buttons.positive button:hover,
+    .channel-step-buttons.negative button:hover,
+    .channel-step-buttons.volume-button:hover {
+        background-color: var(--golden-diamond);
+        color: white;
+    }
+    .channel-step-buttons.volume-button {
+        flex: 1 1 12%;
+        font-size: 1.2rem;
+        padding: 8px 6px;
+        max-width: 48px;
+    }
+    select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: left 15px center;
+        max-width: 400px;
+        width: 100%;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 2px solid var(--copper);
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        margin: 6px auto 0 auto;
+        display: block;
+        font-size: 1rem;
+        height: 32px;
+        overflow: hidden;
+        line-height: 1.2;
+    }
+    select:hover, select:focus {
+        background-color: var(--golden-diamond);
+        color: white;
+        outline: none;
+        border-color: var(--golden-diamond);
+    }
+    input[type="text"] {
+        width: 80px;
+        max-width: 100%;
+        padding: 5px 8px;
+        border-radius: 6px;
+        border: 2px solid var(--copper);
+        font-size: 0.85rem;
+        text-align: center;
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+        transition: background-color 0.3s ease;
+    }
+    input[type="text"]:focus {
+        background-color: var(--golden-diamond);
+        color: white;
+        outline: none;
+        border-color: var(--golden-diamond);
+    }
+    #portInput {
+        width: 60px;
+        max-width: 100%;
+    }
+    body, button {
+        user-select: none;
+    }
+    button {
+        border: none;
+    }
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 15px 120px 15px;
+        background-color: var(--control-bg);
+        border-radius: 10px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        position: relative;
+        z-index: 1;
+    }
+    .controls-server {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 900px;
+        width: 100%;
+        background: var(--control-bg);
+        padding: 6px 10px;
+        box-shadow: 0 -3px 10px var(--copper);
+        border-top: 2px solid var(--copper);
+        z-index: 1005;
+        font-size: 0.75rem;
+        color: var(--text-color);
+        display: none;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+    }
+    .server-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 100px;
+    }
+    label {
+        font-weight: bold;
+        white-space: nowrap;
+        margin-bottom: 2px;
+        text-align: right;
+    }
+    #updateServerBtn {
+        height: 36px;
+        padding: 0 12px;
+        border-radius: 6px;
+        border: 2px solid var(--copper);
+        font-weight: bold;
+        font-size: 0.85rem;
+        background-color: var(--primary-color);
+        color: white;
+        cursor: pointer;
+        user-select: none;
+        align-self: flex-end;
+        transition: background-color 0.3s ease;
+    }
+    #updateServerBtn:hover {
+        background-color: var(--copper);
+    }
+    #toggleServerSettings {
+        cursor: pointer;
+        color: var(--golden-diamond);
+        font-weight: bold;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        user-select: none;
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Sunplus SAT2IP</h1>
+<div class="container">
+    <h1> Sunplus  SAT2IP </h1>
 
-        <div class="video-container">
-            <video id="videoPlayer" controls autoplay muted playsinline></video>
-            <div class="video-controls">
-                <button id="toggleMuteBtn" aria-label="كتم/إلغاء كتم الصوت">🔇</button>
-            </div>
+    <video id="videoPlayer" controls autoplay muted playsinline></video>
+
+    <div id="channelDisplay" aria-live="polite" aria-atomic="true">مباشر</div>
+
+    <select id="channelSelect" aria-label="اختيار القناة"></select>
+
+    <div class="channel-controls" aria-label="أزرار التحكم بالقنوات">
+        <div class="channel-step-buttons positive" aria-label="زيادة القناة">
+            <button class="changeChannelBtn" data-step="1">+1</button>
+            <button class="changeChannelBtn" data-step="10">+10</button>
+            <button class="changeChannelBtn" data-step="20">+20</button>
+            <button class="changeChannelBtn" data-step="50">+50</button>
+            <button class="changeChannelBtn" data-step="100">+100</button>
+            <button class="volume-button" id="volumeUpBtn" aria-label="رفع الصوت">🔊</button>
         </div>
-
-        <div id="channelDisplay" aria-live="polite" aria-atomic="true">مباشر</div>
-
-        <div id="errorMessage" aria-live="assertive"></div>
-
-        <select id="channelSelect" aria-label="اختيار القناة"></select>
-
-        <div class="channel-controls" aria-label="أزرار التحكم بالقنوات">
-            <div class="channel-step-buttons positive" aria-label="زيادة القناة">
-                <button class="changeChannelBtn" data-step="1">+1</button>
-                <button class="changeChannelBtn" data-step="10">+10</button>
-                <button class="changeChannelBtn" data-step="20">+20</button>
-                <button class="changeChannelBtn" data-step="50">+50</button>
-                <button class="changeChannelBtn" data-step="100">+100</button>
-                <button class="volume-button" id="volumeUpBtn" aria-label="رفع الصوت">🔊</button>
-            </div>
-            <div class="channel-step-buttons negative" aria-label="نقصان القناة">
-                <button class="changeChannelBtn" data-step="-1">-1</button>
-                <button class="changeChannelBtn" data-step="-10">-10</button>
-                <button class="changeChannelBtn" data-step="-20">-20</button>
-                <button class="changeChannelBtn" data-step="-50">-50</button>
-                <button class="changeChannelBtn" data-step="-100">-100</button>
-                <button class="volume-button" id="volumeDownBtn" aria-label="خفض الصوت">🔉</button>
-            </div>
-        </div>
-
-        <select id="lastChannels" aria-label="آخر ٥ قنوات تم تشغيلها" title="اضغط على أي قناة لتشغيلها"></select>
-        <button id="clearHistoryBtn">مسح السجل</button>
-
-        <div id="toggleServerSettings" tabindex="0" role="button" aria-pressed="false" aria-label="عرض إعدادات السيرفر">
-            ⚙️ تعديل إعدادات السيرفر
+        <div class="channel-step-buttons negative" aria-label="نقصان القناة">
+            <button class="changeChannelBtn" data-step="-1">-1</button>
+            <button class="changeChannelBtn" data-step="-10">-10</button>
+            <button class="changeChannelBtn" data-step="-20">-20</button>
+            <button class="changeChannelBtn" data-step="-50">-50</button>
+            <button class="changeChannelBtn" data-step="-100">-100</button>
+            <button class="volume-button" id="volumeDownBtn" aria-label="خفض الصوت">🔉</button>
         </div>
     </div>
 
-    <div class="controls-server" aria-label="إعدادات السيرفر">
-        <div class="server-inputs">
-            <label for="ipInput">عنوان IP:</label>
-            <input type="text" id="ipInput" value="192.168.1.88" placeholder="ادخل IP هنا" />
-        </div>
-        <div class="server-inputs">
-            <label for="portInput">البورت:</label>
-            <input type="text" id="portInput" maxlength="6" value="9891" placeholder="ادخل البورت هنا" />
-        </div>
-        <button id="updateServerBtn" aria-label="تحديث إعدادات السيرفر">تحديث السيرفر</button>
+    <select id="lastChannels" aria-label="آخر ٥ قنوات تم تشغيلها" title="اضغط على أي قناة لتشغيلها"></select>
+
+    <div id="toggleServerSettings" tabindex="0" role="button" aria-pressed="false" aria-label="عرض إعدادات السيرفر">
+        ⚙️ تعديل إعدادات السيرفر
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script>
-        // الإعدادات الافتراضية
-        let defaultIP = "192.168.1.88";
-        let defaultPort = "9891";
-        let channelCount = 2000;
-        let lastChannels = [];
+<div class="controls-server" aria-label="إعدادات السيرفر">
+    <div class="server-inputs">
+        <label for="ipInput">عنوان IP:</label>
+        <input type="text" id="ipInput" value="192.168.1.88" placeholder="ادخل IP هنا" />
+    </div>
+    <div class="server-inputs">
+        <label for="portInput">البورت:</label>
+        <input type="text" id="portInput" maxlength="6" value="9891" placeholder="ادخل البورت هنا" />
+    </div>
+    <button id="updateServerBtn" aria-label="تحديث إعدادات السيرفر">تحديث السيرفر</button>
+</div>
 
-        // عناصر DOM
-        const video = document.getElementById("videoPlayer");
-        const channelSelect = document.getElementById("channelSelect");
-        const ipInput = document.getElementById("ipInput");
-        const portInput = document.getElementById("portInput");
-        const updateServerBtn = document.getElementById("updateServerBtn");
-        const volumeUpBtn = document.getElementById("volumeUpBtn");
-        const volumeDownBtn = document.getElementById("volumeDownBtn");
-        const lastChannelsSelect = document.getElementById("lastChannels");
-        const toggleServerSettingsBtn = document.getElementById("toggleServerSettings");
-        const controlsServerDiv = document.querySelector(".controls-server");
-        const channelDisplay = document.getElementById("channelDisplay");
-        const errorMessage = document.getElementById("errorMessage");
-        const clearHistoryBtn = document.getElementById("clearHistoryBtn");
-        const toggleMuteBtn = document.getElementById("toggleMuteBtn");
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+    let defaultIP = "192.168.1.88";
+    let defaultPort = "9891";
+    let channelCount = 2000;
 
-        // تحميل الإعدادات المحفوظة
-        function loadSettings() {
-            if (localStorage.getItem('sat2ipSettings')) {
-                const settings = JSON.parse(localStorage.getItem('sat2ipSettings'));
-                defaultIP = settings.ip;
-                defaultPort = settings.port;
-                ipInput.value = settings.ip;
-                portInput.value = settings.port;
-            }
-            
-            if (localStorage.getItem('lastChannels')) {
-                lastChannels = JSON.parse(localStorage.getItem('lastChannels'));
-                updateLastChannelsUI();
-            }
+    const video = document.getElementById("videoPlayer");
+    const channelSelect = document.getElementById("channelSelect");
+    const ipInput = document.getElementById("ipInput");
+    const portInput = document.getElementById("portInput");
+    const updateServerBtn = document.getElementById("updateServerBtn");
+    const volumeUpBtn = document.getElementById("volumeUpBtn");
+    const volumeDownBtn = document.getElementById("volumeDownBtn");
+    const lastChannelsSelect = document.getElementById("lastChannels");
+    const toggleServerSettingsBtn = document.getElementById("toggleServerSettings");
+    const controlsServerDiv = document.querySelector(".controls-server");
+    const channelDisplay = document.getElementById("channelDisplay");
+
+    let lastChannels = [];
+
+    function updateLastChannels(channelNumber) {
+        if(channelNumber === "") channelNumber = "مباشر";
+        else channelNumber = String(channelNumber);
+        lastChannels = lastChannels.filter(ch => ch !== channelNumber);
+        lastChannels.unshift(channelNumber);
+        if(lastChannels.length > 5) lastChannels.pop();
+
+        lastChannelsSelect.innerHTML = "";
+        lastChannels.forEach(ch => {
+            const option = document.createElement("option");
+            option.value = (ch === "مباشر") ? "" : ch;
+            option.textContent = ch;
+            lastChannelsSelect.appendChild(option);
+        });
+    }
+
+    function generateStreamUrl(channelNumber) {
+        if(channelNumber === "") 
+            return `http://${defaultIP}:${defaultPort}/live`;
+        return `http://${defaultIP}:${defaultPort}/live/${channelNumber}`;
+    }
+
+    function loadStream(channelNumber) {
+        if(channelNumber === null || channelNumber === undefined) return;
+
+        const streamUrl = generateStreamUrl(channelNumber);
+
+        if(window.hls) {
+            window.hls.destroy();
+            window.hls = null;
         }
 
-        // التحقق من صحة IP
-        function isValidIP(ip) {
-            return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip);
-        }
-
-        // التحقق من صحة البورت
-        function isValidPort(port) {
-            return /^[0-9]{1,5}$/.test(port) && parseInt(port) <= 65535;
-        }
-
-        // تحديث واجهة القنوات الأخيرة
-        function updateLastChannelsUI() {
-            lastChannelsSelect.innerHTML = "";
-            lastChannels.forEach(ch => {
-                const option = document.createElement("option");
-                option.value = (ch === "مباشر") ? "" : ch;
-                option.textContent = ch;
-                lastChannelsSelect.appendChild(option);
-            });
-        }
-
-        // تحديث القنوات الأخيرة
-        function updateLastChannels(channelNumber) {
-            if(channelNumber === "") channelNumber = "مباشر";
-            else channelNumber = String(channelNumber);
-            
-            lastChannels = lastChannels.filter(ch => ch !== channelNumber);
-            lastChannels.unshift(channelNumber);
-            if(lastChannels.length > 5) lastChannels.pop();
-            
-            updateLastChannelsUI();
-            localStorage.setItem('lastChannels', JSON.stringify(lastChannels));
-        }
-
-        // إنشاء رابط البث
-        function generateStreamUrl(channelNumber) {
-            if(channelNumber === "") 
-                return `http://${defaultIP}:${defaultPort}/live`;
-            return `http://${defaultIP}:${defaultPort}/live/${channelNumber}`;
-        }
-
-        // تحميل البث
-        function loadStream(channelNumber) {
-            if(channelNumber === null || channelNumber === undefined) return;
-
-            const streamUrl = generateStreamUrl(channelNumber);
-            errorMessage.textContent = "";
-            channelDisplay.textContent = channelNumber === "" ? "مباشر" : channelNumber;
-
-            if(window.hls) {
-                window.hls.destroy();
-                window.hls = null;
-            }
-
-            if(Hls.isSupported()) {
-                try {
-                    window.hls = new Hls();
-                    window.hls.loadSource(streamUrl);
-                    window.hls.attachMedia(video);
-                    
-                    window.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                        video.muted = true;
-                        video.play().catch(e => {
-                            errorMessage.textContent = "خطأ في تشغيل الفيديو";
-                            console.error("Play error:", e);
-                        });
-                    });
-                    
-                    window.hls.on(Hls.Events.ERROR, (event, data) => {
-                        if(data.fatal) {
-                            errorMessage.textContent = "خطأ في تحميل القناة";
-                            console.error("HLS Error:", data);
-                        }
-                    });
-                } catch(e) {
-                    errorMessage.textContent = "خطأ في تحميل المشغل";
-                    console.error("HLS Init Error:", e);
-                }
-            } else if(video.canPlayType("application/vnd.apple.mpegurl")) {
-                video.src = streamUrl;
+        if(Hls.isSupported()) {
+            window.hls = new Hls();
+            window.hls.loadSource(streamUrl);
+            window.hls.attachMedia(video);
+            window.hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 video.muted = true;
-                video.play().catch(e => {
-                    errorMessage.textContent = "خطأ في تشغيل الفيديو";
-                    console.error("Play error:", e);
-                });
-            } else {
-                errorMessage.textContent = "المتصفح لا يدعم تشغيل هذا النوع من الفيديو";
-            }
-            
-            channelSelect.value = channelNumber;
-            updateLastChannels(channelNumber);
-        }
-
-        // تعبئة قائمة القنوات
-        function populateChannels(start, end) {
-            channelSelect.innerHTML = "";
-            
-            const liveOption = document.createElement("option");
-            liveOption.value = "";
-            liveOption.textContent = "مباشر";
-            channelSelect.appendChild(liveOption);
-
-            for(let i = start; i <= end; i++) {
-                const option = document.createElement("option");
-                option.value = i;
-                option.textContent = `القناة ${i}`;
-                channelSelect.appendChild(option);
-            }
-        }
-
-        // تحديث زر الكتم بناءً على حالة الصوت
-        function updateMuteButton() {
-            if(video.muted) {
-                toggleMuteBtn.textContent = "🔇";
-                toggleMuteBtn.setAttribute("aria-label", "إلغاء كتم الصوت");
-            } else {
-                toggleMuteBtn.textContent = "🔊";
-                toggleMuteBtn.setAttribute("aria-label", "كتم الصوت");
-            }
-        }
-
-        // تهيئة الصفحة
-        function init() {
-            loadSettings();
-            populateChannels(1, channelCount);
-            loadStream("");
-            updateMuteButton();
-        }
-
-        // أحداث DOM
-        channelSelect.addEventListener("change", () => {
-            loadStream(channelSelect.value);
-        });
-
-        lastChannelsSelect.addEventListener("change", () => {
-            loadStream(lastChannelsSelect.value);
-        });
-
-        toggleServerSettingsBtn.addEventListener("click", () => {
-            controlsServerDiv.style.display = controlsServerDiv.style.display === "flex" ? "none" : "flex";
-            toggleServerSettingsBtn.setAttribute("aria-pressed", 
-                controlsServerDiv.style.display === "flex" ? "true" : "false");
-        });
-
-        toggleServerSettingsBtn.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                toggleServerSettingsBtn.click();
-            }
-        });
-
-        updateServerBtn.addEventListener("click", () => {
-            const ipVal = ipInput.value.trim();
-            const portVal = portInput.value.trim();
-
-            if(!isValidIP(ipVal)) {
-                errorMessage.textContent = "عنوان IP غير صحيح";
-                return;
-            }
-
-            if(!isValidPort(portVal)) {
-                errorMessage.textContent = "رقم البورت غير صحيح (يجب أن يكون بين 1 و 65535)";
-                return;
-            }
-
-            defaultIP = ipVal;
-            defaultPort = portVal;
-            
-            localStorage.setItem('sat2ipSettings', JSON.stringify({ 
-                ip: defaultIP, 
-                port: defaultPort 
-            }));
-
-            loadStream(channelSelect.value);
-        });
-
-        document.querySelectorAll(".changeChannelBtn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                let step = Number(btn.getAttribute("data-step"));
-                let current = channelSelect.value === "" ? 0 : Number(channelSelect.value);
-
-                let newChannel = current + step;
-                if(newChannel < 1) newChannel = 1;
-                if(newChannel > channelCount) newChannel = channelCount;
-
-                loadStream(newChannel);
+                video.play().catch(()=>{});
             });
+        } else if(video.canPlayType("application/vnd.apple.mpegurl")) {
+            video.src = streamUrl;
+            video.muted = true;
+            video.play().catch(()=>{});
+        }
+        channelSelect.value = channelNumber;
+        updateLastChannels(channelNumber);
+        channelDisplay.textContent = channelNumber === "" ? "مباشر" : channelNumber;
+    }
+
+    function populateChannels(start, end) {
+        for(let i=start; i<=end; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = `القناة ${i}`;
+            channelSelect.appendChild(option);
+        }
+    }
+
+    window.onload = function () {
+        const liveOption = document.createElement("option");
+        liveOption.value = "";
+        liveOption.textContent = "مباشر";
+        channelSelect.appendChild(liveOption);
+
+        populateChannels(1, channelCount);
+
+        channelSelect.value = "";
+        loadStream("");
+    };
+
+    channelSelect.addEventListener("change", () => {
+        loadStream(channelSelect.value);
+    });
+
+    lastChannelsSelect.addEventListener("change", () => {
+        loadStream(lastChannelsSelect.value);
+    });
+
+    toggleServerSettingsBtn.addEventListener("click", () => {
+        if(controlsServerDiv.style.display === "flex") {
+            controlsServerDiv.style.display = "none";
+            toggleServerSettingsBtn.setAttribute("aria-pressed", "false");
+        } else {
+            controlsServerDiv.style.display = "flex";
+            toggleServerSettingsBtn.setAttribute("aria-pressed", "true");
+        }
+    });
+
+    updateServerBtn.addEventListener("click", () => {
+        const ipVal = ipInput.value.trim();
+        const portVal = portInput.value.trim();
+
+        if(ipVal) defaultIP = ipVal;
+        if(portVal) defaultPort = portVal;
+
+        loadStream(channelSelect.value);
+        alert(`تم تحديث الإعدادات إلى:\nIP: ${defaultIP}\nPort: ${defaultPort}`);
+    });
+
+    document.querySelectorAll(".changeChannelBtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            let step = Number(btn.getAttribute("data-step"));
+            let current = channelSelect.value === "" ? 0 : Number(channelSelect.value);
+
+            let newChannel = current + step;
+            if(newChannel < 1) newChannel = 1;
+            if(newChannel > channelCount) newChannel = channelCount;
+
+            loadStream(newChannel);
         });
+    });
 
-        volumeUpBtn.addEventListener("click", () => {
-            video.volume = Math.min(1, video.volume + 0.1);
-        });
+    volumeUpBtn.addEventListener("click", () => {
+        video.volume = Math.min(1, video.volume + 0.1);
+    });
 
-        volumeDownBtn.addEventListener("click", () => {
-            video.volume = Math.max(0, video.volume - 0.1);
-        });
-
-        clearHistoryBtn.addEventListener("click", () => {
-            lastChannels = [];
-            localStorage.removeItem('lastChannels');
-            updateLastChannelsUI();
-        });
-
-        // تبديل حالة الكتم
-        toggleMuteBtn.addEventListener("click", () => {
-            video.muted = !video.muted;
-            updateMuteButton();
-        });
-
-        // تحديث زر الكتم عند تغيير مستوى الصوت
-        video.addEventListener("volumechange", updateMuteButton);
-
-        // بدء التطبيق
-        init();
-    </script>
+    volumeDownBtn.addEventListener("click", () => {
+        video.volume = Math.max(0, video.volume - 0.1);
+    });
+</script>
 </body>
 </html>
